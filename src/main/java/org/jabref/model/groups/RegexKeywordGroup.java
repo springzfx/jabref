@@ -19,16 +19,17 @@ public class RegexKeywordGroup extends KeywordGroup {
     }
 
     private static Pattern compilePattern(String searchExpression, boolean caseSensitive) {
-
-        return caseSensitive ? Pattern.compile("\\b" + searchExpression + "\\b") : Pattern.compile(
-                "\\b" + searchExpression + "\\b", Pattern.CASE_INSENSITIVE);
-
+        // removed word boundary for more free match
+        return caseSensitive ? Pattern.compile(searchExpression) : Pattern.compile(
+                searchExpression, Pattern.CASE_INSENSITIVE);
     }
 
     @Override
     public boolean contains(BibEntry entry) {
 
         Optional<String> content = entry.getField(searchField);
+        // allow empty field also include entries that do not have the field at all
+        if (!content.isPresent() && pattern.matcher("").find()) return true;
         return content.map(value -> pattern.matcher(value).find()).orElse(false);
     }
 
