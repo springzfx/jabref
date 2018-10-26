@@ -134,11 +134,13 @@ import org.jabref.model.database.shared.DatabaseSynchronizer;
 import org.jabref.model.entry.BibEntry;
 import org.jabref.model.entry.EntryType;
 import org.jabref.model.entry.FieldName;
+import org.jabref.model.entry.IdGenerator;
 import org.jabref.model.entry.InternalBibtexFields;
 import org.jabref.model.entry.event.EntryChangedEvent;
 import org.jabref.model.entry.event.EntryEventSource;
 import org.jabref.model.entry.specialfields.SpecialField;
 import org.jabref.model.entry.specialfields.SpecialFieldValue;
+import org.jabref.model.groups.GroupTreeNode;
 import org.jabref.model.strings.StringUtil;
 import org.jabref.preferences.JabRefPreferences;
 import org.jabref.preferences.PreviewPreferences;
@@ -870,20 +872,20 @@ public class BasePanel extends JPanel implements ClipboardOwner {
             BibEntry firstBE = null;
 
             for (BibEntry be1 : bes) {
-
+                // We have to clone the entries, since the pasted entries must exist independently of the copied ones.
                 BibEntry be = (BibEntry) be1.clone();
                 if (firstBE == null) {
                     firstBE = be;
                 }
+
                 UpdateField.setAutomaticFields(be, Globals.prefs.getUpdateFieldPreferences());
+                // Mark entries if we should
+                if (EntryMarker.shouldMarkEntries()) {
+                    EntryMarker.markEntry(be, EntryMarker.IMPORT_MARK_LEVEL, false, ce);
+                }
 
-                // We have to clone the
-                // entries, since the pasted
-                // entries must exist
-                // independently of the copied
-                // ones.
+                be.setGroupHit(true);
                 bibDatabaseContext.getDatabase().insertEntry(be);
-
                 ce.addEdit(new UndoableInsertEntry(bibDatabaseContext.getDatabase(), be, BasePanel.this));
             }
             ce.end();
