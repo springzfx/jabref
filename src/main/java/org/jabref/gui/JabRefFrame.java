@@ -1,16 +1,6 @@
 package org.jabref.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
@@ -895,11 +885,13 @@ public class JabRefFrame extends JFrame implements OutputPrinter {
     private void initLayout() {
 
         setProgressBarVisible(false);
+        Font menuFont = new Font("sans-serif", Font.PLAIN, Globals.prefs.getInt(JabRefPreferences.MENU_FONT_SIZE));
 
         pushApplications = new PushToApplications();
         pushExternalButton = new PushToApplicationButton(this, pushApplications.getApplications());
         fillMenu();
         createToolBar();
+        setFontRecursive(mb, menuFont);
         setJMenuBar(mb);
         getContentPane().setLayout(new BorderLayout());
 
@@ -1277,6 +1269,13 @@ public class JabRefFrame extends JFrame implements OutputPrinter {
         mb.add(helpMenu);
 
         createDisabledIconsForMenuEntries(mb);
+    }
+
+    private void setFontRecursive(JComponent m, Font f){
+        m.setFont(f);
+        for (int i=0;i<m.getComponentCount();i++){
+            setFontRecursive((JComponent) m.getComponent(i), f);
+        }
     }
 
     public void addParserResult(ParserResult parserResult, boolean focusPanel) {

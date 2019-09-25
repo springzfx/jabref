@@ -249,10 +249,11 @@ class GeneralTab extends JPanel implements PrefsTab {
     }
 
     @Override
+    @SuppressWarnings("ReturnValueIgnored")
     public boolean validateSettings() {
         try {
             // Test if date format is legal:
-            DateTimeFormatter.ofPattern(timeStampFormat.getText());
+           DateTimeFormatter.ofPattern(timeStampFormat.getText());
 
         } catch (IllegalArgumentException ex2) {
             JOptionPane.showMessageDialog
